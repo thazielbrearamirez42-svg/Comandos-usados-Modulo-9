@@ -1,0 +1,97 @@
+Comandos utilizados, práctica laboratorio 9.2: Infraestructura como Código (IaC) y Automatización
+
+Despliegue de una VM con Terraform en DigitalOcean
+Crear token
+>API>Generate a NEW Token> name (Terrafom token) >Read and write(full access)>Generate token 
+
+#creear llave
+>settings >security>add>ssh key
+
+#en rhel: cat ~/.ssh/id_rsa.pub
+(copiamos llave)
+
+Instalar terraform en RHEL
+
+sudo dnf install -y yum-utils
+sudo dnf config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+
+sudo sed -i 's/$releasever/9/g' /etc/yum.repos.d/hashicorp.repo 
+
+##Esto obliga al sistema a usar los repositorios de RHEL 9 #
+
+sudo dnf install terraform -y
+terraform -version
+
+## Crear la llave ssh
+
+ssh-keygen -t rsa
+esta en: ~/.ssh/id_rsa.pub
+
+## Crear una carpeta para el proyecto
+
+mkdir ~/terraform-digitalocean
+cd ~/terraform-digitalocean
+
+## Crear el archivo de configuracion
+
+nano main.tf
+
+terraform {
+  required_providers {
+    digitalocean = {
+      source = "digitalocean/digitalocean"
+      version = "~> 2.0"
+    }
+  }
+}
+
+provider "digitalocean" {
+token = var.do_token
+}
+variable "do_token" {}
+
+
+#Crear varibale para el token:
+sudo nano terraform.tfvars
+
+#escribir:
+do_token = "TU_TOKEN_DE_DIGITALOCEAN"    (copia token)
+
+## Iniciar:
+sudo terraform init
+
+#Crear conf. del Droplet:
+sudo nano main.tf
+
+resource "digitalocean_ssh_key" "mi_llave" {
+  name       = "Llave-RHEL-Ansible"
+  public_key = file("~/.ssh/id_rsa.pub")
+}
+
+resource "digitalocean_droplet" "os3_vm" {
+  image    = "ubuntu-22-04-x64"
+  name     = "OS3vm"
+  region   = "nyc1"
+  size     = "s-1vcpu-1gb"
+  ssh_keys = [ "TU_FINGERPRINT_DE_LA_LLAVE"]         
+}
+
+
+## Desplegar la VM
+sudo terraform validate
+terraform apply
+
+Confirmamos en digital ocean en droplets
+(COPIA Y PEGA)
+
+ssh root@ip_terraform 
+
+
+## Destruir
+
+terraform destroy
+
+
+output "ip_address" {
+  value = digitalocean_droplet.os3_vm.ipv4_address
+}
