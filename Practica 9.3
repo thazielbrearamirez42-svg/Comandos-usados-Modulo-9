@@ -38,11 +38,12 @@ cat ~/.ssh/id_rsa.pub
 ssh-copy-id ansible@IP_DEL_CLIENTE_LINUX
 #(Reemplaza IP_DEL_CLIENTE_LINUX por la IP de la máquina de DigitalOcean)
 
-#Si da acceso denegado, creamos el directorio en donde se almacenará la llave pública:
+#Si da acceso denegado, creamos el directorio en donde se almacenará la llave pública (en digital ocean)
 
 sudo mkdir -p /home/ansible/.ssh
 sudo nano /home/ansible/.ssh/authorized_keys
 (copia llave de Linux en digital)
+vi /home/ansible/.ssh/authorized_keys
 
 sudo chown -R ansible:ansible /home/ansible/.ssh
 sudo chmod 700 /home/ansible/.ssh
@@ -56,7 +57,7 @@ PasswordAuthentication yes
 #Luego, reiniciamos el servicio SSH:
 sudo systemctl restart sshd
 
-#Abrir PowerShell como administrador.
+#Abrir PowerShell como administrador desde windows:
 #Ejecutar:
 
 winrm quickconfig
@@ -69,7 +70,7 @@ Set-Item -Path WSMan:\localhost\Service\Auth\Basic -Value $true
 
 #Configurar WinRM en Windows 10
 
-#Crear inventario de Ansible (/etc/ansible/hosts) en el servidor RHEL.
+#Crear inventario de Ansible (/etc/ansible/hosts) en el servidor RHEL:
 #Editar el archivo de inventario:
 
 sudo nano /etc/ansible/hosts
@@ -89,3 +90,24 @@ en powershell:ipconfig
 #Probar conectividad con módulo ping
 ansible linux -m ping
 ansible win -m win_ping
+
+
+=============================
+por si falla instalar collection de ansible :
+mkdir -p ~/.ansible/collections
+
+ansible-galaxy collection install ansible.windows -p ~/.ansible/collections
+
+ansible-galaxy collection list
+===============================
+Instala de forma estándar (Ansible decide la mejor ruta)
+ansible-galaxy collection install ansible.windows
+ansible-galaxy collection install community.windows
+
+La dependencia de Python: Ansible necesita pywinrm para hablar con Windows.
+
+pip3 install pywinrm
+
+Para estar seguro de que Ansible ve la colección antes de lanzar el laboratorio, usa:
+
+ansible-doc -t module -l | grep win_
