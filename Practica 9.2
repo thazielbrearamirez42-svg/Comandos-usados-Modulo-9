@@ -75,7 +75,8 @@ resource "digitalocean_droplet" "os3_vm" {
   size     = "s-1vcpu-1gb"
   ssh_keys = [ "TU_FINGERPRINT_DE_LA_LLAVE"]         
 }
-
+'
+(aqui ponemos como la ip del token)
 
 ## Desplegar la VM
 sudo terraform validate
@@ -86,6 +87,7 @@ Confirmamos en digital ocean en droplets
 
 ssh root@ip_terraform 
 
+ver en digital: First Proyect
 
 ## Destruir
 
