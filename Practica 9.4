@@ -6,6 +6,8 @@ Comandos Ad-Hoc con Ansible
 #Comando ad-hoc para reiniciar la VM cliente Linux (ansible1)
 ansible linux -m reboot -b
 
-#Comando ad-hoc para copiar un archivo de Windows (deberás poseer el archivo txt a utilizar, localizado en el escritorio de tu máquina)
+#Comando ad-hoc para copiar un archivo de Windows (deberás poseer el archivo txt a utilizar, localizado en el escritorio de tu máquina) 
+#Creamos archivo desde escritorio
+
 ansible win -m win_copy \
   -a "src='C:/Users/ansible/Desktop/prueba.txt' dest='C:/Users/ansible/Documents/prueba.txt' remote_src=yes"
