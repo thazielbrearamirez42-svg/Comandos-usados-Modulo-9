@@ -63,3 +63,52 @@ ansible-playbook install_nginx.yml
 sudo systemctl status nginx
 
 #O desde un navegador, visitar la IP de la VM Linux para ver la página por defecto de NGINX. 
+=========
+nano ~/practica_c.yml
+Copia y pega este código:
+
+YAML
+---
+- name: Configuracion de VM en DigitalOcean
+  hosts: digitalocean
+  become: yes
+
+  tasks:
+    # 1. Crear el usuario adrian123
+    - name: Crear el usuario adrian123
+      user:
+        name: adrian123
+        shell: /bin/bash
+        groups: sudo
+        append: yes
+        state: present
+
+    # 2. Agregar al grupo sudoers (sin contraseña para facilitar la tarea)
+    - name: Permitir sudo sin contraseña para adrian123
+      copy:
+        content: "adrian123 ALL=(ALL) NOPASSWD:ALL"
+        dest: /etc/sudoers.d/adrian123
+        mode: '0440'
+
+    # 3. Actualizar repositorios e instalar bashtop
+    - name: Actualizar repositorios (apt) e instalar bashtop
+      apt:
+        name: bashtop
+        update_cache: yes
+        state: present
+Paso 4: Ejecutar el Playbook
+Lanza el comando desde tu servidor RHEL:
+
+Bash
+ansible-playbook ~/practica_c.yml
+Paso 5: Verificación
+Para confirmar que todo funcionó, conéctate a la VM y prueba el usuario y el programa:
+
+Entrar con el nuevo usuario:
+
+Bash
+ssh adrian123@IP_DE_TU_VM
+Ejecutar bashtop:
+
+Bash
+bashtop
